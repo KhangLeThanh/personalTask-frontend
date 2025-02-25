@@ -9,3 +9,9 @@ export enum SortingDirectionEnum {
   ASCENDING = "asc",
   DESCENDING = "desc",
 }
+
+export enum TaskStatus {
+  toDO = "toDo",
+  inProgress = "inProgress",
+  done = "done",
+}

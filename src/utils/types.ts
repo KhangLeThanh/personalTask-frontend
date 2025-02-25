@@ -11,3 +11,12 @@ export type UserProfie = {
   userName: string;
   profile: Profile;
 };
+export type Task = {
+  title: string;
+  content: string;
+  status: string;
+};
+export type PersonalTask = {
+  userName: string;
+  personalTasks: Task[];
+};
