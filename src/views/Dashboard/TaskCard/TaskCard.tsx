@@ -1,44 +1,162 @@
-import React from "react";
-import { Task } from "../../utils/types";
+import React, { useEffect, useState } from "react";
+import { Box, Card, CardContent, Typography, Button } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { TaskStatus } from "../../../utils/enum";
+import { Task } from "../../../utils/types";
+import { getPersonalTask } from "../../../api/personalTaskApi";
 
 type TaskCardProps = {
-  tasks: Task[]; // Accept tasks as an array of Task type
-  setSelectedTask: (task: Task) => void; // Function to set the selected task for editing
-  setTaskDialogOpen: (open: boolean) => void; // Function to toggle the task dialog
-  setIsEdit: (isEdit: boolean) => void; // Function to toggle the task dialog
+  userId: string | null;
+  setSelectedTask: (task: Task) => void;
+  setTaskDialogOpen: (open: boolean) => void;
+  setIsEdit: (isEdit: boolean) => void;
+  setIsDeleteDialog: (isDelete: boolean) => void;
 };
 
 const TaskCard: React.FC<TaskCardProps> = ({
-  tasks,
+  userId,
   setSelectedTask,
   setIsEdit,
   setTaskDialogOpen,
+  setIsDeleteDialog,
 }) => {
+  const [toDoTasks, setToDoTasks] = useState<Task[]>([]);
+  const [inProgressTasks, setInProgressTasks] = useState<Task[]>([]);
+  const [doneTasks, setDoneTasks] = useState<Task[]>([]);
+  console.log("test do", toDoTasks);
+  useEffect(() => {
+    if (userId) {
+      getPersonalTask(userId, TaskStatus.toDO).then((tasks) => {
+        console.log("Fetched To Do Tasks:", tasks); // Check the fetched data
+        setToDoTasks(tasks);
+      });
+      getPersonalTask(userId, TaskStatus.inProgress).then(setInProgressTasks);
+      getPersonalTask(userId, TaskStatus.done).then(setDoneTasks);
+    }
+  }, [userId]);
   const handleEditTask = (task: Task) => {
-    setSelectedTask(task); // Set the selected task for editing
-    setTaskDialogOpen(true); // Open the task dialog
+    setSelectedTask(task);
+    setTaskDialogOpen(true);
     setIsEdit(true);
   };
-  return !tasks ? (
-    <div className="p-6">
-      <h2>No Tasks</h2>
-    </div>
-  ) : (
-    <div>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task._id} className="p-4 border-b">
-            <span>{task.title}</span>
-            <button
-              onClick={() => handleEditTask(task)}
-              className="bg-blue-500 text-white p-2 rounded ml-4"
-            >
-              Edit
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+
+  const handleDeleteTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsDeleteDialog(true);
+  };
+
+  return (
+    <Box sx={{ padding: 3 }}>
+      <Grid container spacing={3}>
+        {/* To Do Column */}
+        <Grid size={4}>
+          <Typography variant="h6" sx={{ marginBottom: 2 }}>
+            To Do
+          </Typography>
+          {toDoTasks.map((task) => (
+            <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardContent>
+                <Typography variant="body1">{task.title}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: 1,
+                  }}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => handleEditTask(task)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDeleteTask(task)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Grid>
+
+        {/* In Progress Column */}
+        <Grid size={4}>
+          <Typography variant="h6" sx={{ marginBottom: 2 }}>
+            In Progress
+          </Typography>
+          {inProgressTasks.map((task) => (
+            <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardContent>
+                <Typography variant="body1">{task.title}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: 1,
+                  }}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => handleEditTask(task)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDeleteTask(task)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Grid>
+
+        {/* Done Column */}
+        <Grid size={4}>
+          <Typography variant="h6" sx={{ marginBottom: 2 }}>
+            Done
+          </Typography>
+          {doneTasks.map((task) => (
+            <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardContent>
+                <Typography variant="body1">{task.title}</Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: 1,
+                  }}
+                >
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => handleEditTask(task)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDeleteTask(task)}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 

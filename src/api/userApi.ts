@@ -10,7 +10,6 @@ export const getUser = async (userId: string | null) => {
     const response = await axios.get(`${APIURL}/users/${userId}`, {
       headers: getAuthHeaders(),
     });
-    console.log("Test response", response.data);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || "Error fetching user ");

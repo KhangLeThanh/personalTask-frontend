@@ -3,6 +3,7 @@ import { Select, MenuItem, FormControl, TextField } from "@mui/material";
 import FormDialog from "../../../components/FormDialog/FormDialog";
 import Label from "../../../components/Label/Label";
 import { Task } from "../../../utils/types";
+import { TaskStatus } from "../../../utils/enum";
 import { taskStatus } from "../../../constant/constantTaskStatus";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createUserTask, updateUserTask } from "../../../api/personalTaskApi"; // Import API functions
@@ -24,7 +25,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   isEdit = false,
   userId,
 }) => {
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<TaskStatus | string>(TaskStatus.toDO);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [taskId, setTaskId] = useState("");
@@ -38,7 +39,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       setContent(task.content);
       setTaskId(task._id);
     } else {
-      setStatus("");
+      setStatus(TaskStatus.toDO);
       setTitle("");
       setContent("");
     }
@@ -47,10 +48,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   // Mutation for creating a task
   const { mutateAsync: createTask } = useMutation({
     mutationFn: createUserTask, // Function to perform mutation (create task)
-    onSuccess: () => {
-      queryClient.invalidateQueries(["tasks", userId]);
-      onConfirm(); // Notify parent component
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["tasks", userId].filter(Boolean));
+      await queryClient.refetchQueries(["tasks", userId].filter(Boolean));
+      onConfirm(); // Trigger onConfirm after the mutation
       onClose(); // Close the dialog
+      // Reset the form
+      setStatus(TaskStatus.toDO);
+      setTitle("");
+      setContent("");
     },
     onError: (error: any) => {
       console.error(
@@ -62,9 +68,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   // Mutation for updating an existing task
   const { mutateAsync: updateTask } = useMutation({
     mutationFn: updateUserTask, // API function for updating a task
-    onSuccess: () => {
-      queryClient.invalidateQueries(["tasks", userId]);
-      onConfirm(); // Notify parent component
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["tasks", userId].filter(Boolean));
+      await queryClient.refetchQueries(["tasks", userId].filter(Boolean));
+      onConfirm(); // Trigger onConfirm after the mutation
       onClose(); // Close the dialog
     },
     onError: (error: any) => {
@@ -80,10 +87,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
     if (isEdit && task && userId) {
       // Update task if in edit mode
-      await updateTask({ userId, taskId, personalTask }); // Pass userId and taskData separately
+      await updateTask({ userId, taskId, personalTask });
     } else if (userId) {
       // Create task if not in edit mode
-      await createTask({ userId, personalTask }); // Pass userId and taskData separately
+      await createTask({ userId, personalTask });
     }
   };
 
@@ -95,9 +102,21 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       onConfirm={handleConfirm}
     >
       <Label text="Title:" />
-      <TextField value={title} onChange={(e) => setTitle(e.target.value)} />
+      <TextField
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        fullWidth
+        required
+      />
       <Label text="Content:" />
-      <TextField value={content} onChange={(e) => setContent(e.target.value)} />
+      <TextField
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        fullWidth
+        required
+        multiline
+        rows={4}
+      />
       <FormControl fullWidth margin="normal">
         <Label text="Status:" />
         <Select value={status} onChange={(e) => setStatus(e.target.value)}>

@@ -5,16 +5,21 @@ import { APIURL } from "../constant/baseUrl";
 import { getAuthHeaders } from "../utils/authHeaders";
 import { Task } from "../utils/types";
 
-// Fetch user profile by userId
-export const getPersonalTask = async (userId: string | null) => {
+// Fetch user tasks by userId and optional status
+export const getPersonalTask = async (
+  userId: string | null,
+  status?: string
+) => {
   try {
     const response = await axios.get(`${APIURL}/tasks/${userId}/task`, {
+      params: status ? { status } : {}, // Add status as a query parameter if provided
       headers: getAuthHeaders(),
     });
-    return response.data;
+    console.log("test task", response.data.personalTasks);
+    return response.data.personalTasks; // Only return the task list
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Error fetching user task"
+      error.response?.data?.message || "Error fetching user tasks"
     );
   }
 };
@@ -61,6 +66,29 @@ export const updateUserTask = async ({
       }
     );
     return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error updating user task"
+    );
+  }
+};
+
+// Delete user task (title, content, status)
+export const deleteUserTask = async ({
+  userId,
+  taskId,
+}: {
+  userId: string | null;
+  taskId: string | null;
+}) => {
+  try {
+    const response = await axios.delete(
+      `${APIURL}/tasks/${userId}/task/${taskId}`,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data || { message: "Task deleted successfully" };
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Error updating user task"
