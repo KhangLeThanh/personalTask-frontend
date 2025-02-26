@@ -1,38 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Button, Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { getUserId } from "../../utils/auth";
-import { getPersonalTask } from "../../api/personalTaskApi";
+import { getUserProfile } from "../../api/userProfileApi";
 import TaskDialog from "./TaskDialog/TaskDialog";
 import TasksCard from "./TaskCard/TaskCard";
 import DeleteTaskDialog from "./TaskDialog/DeleteTaskDialog";
-
-// Fetch tasks using React Query
-const fetchTasks = async (userId: string | null) => {
-  if (!userId) throw new Error("User ID is required");
-  return await getPersonalTask(userId);
-};
+import { UIButtonVariants } from "../../utils/enum";
 
 const Dashboard: React.FC = () => {
   const [isTaskDialogOpen, setTaskDialogOpen] = useState(false);
   const [isDeleteTaskDialogOpen, setIsDeleteTaskDialogOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [userName, setUserName] = useState("");
 
   const navigate = useNavigate();
   const userId = getUserId();
   const queryClient = useQueryClient();
 
-  // Fetch tasks using React Query
-  const {
-    data: tasks,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["tasks", userId],
-    queryFn: () => fetchTasks(userId),
-    enabled: !!userId,
-  });
+  useEffect(() => {
+    if (userId) {
+      getUserProfile(userId)
+        .then((res) => {
+          setUserName(res.userName);
+        })
+        .catch((error) => {
+          console.log("Error fetching user:", error);
+        });
+    }
+  }, [userId]);
 
   const handleUpdateProfile = () => navigate("/update-profile");
 
@@ -41,44 +39,53 @@ const Dashboard: React.FC = () => {
     setTaskDialogOpen(true);
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error fetching tasks</p>;
-
   return (
-    <div className="p-6">
-      <h2>Welcome!</h2>
-      <div className="flex gap-2">
-        <button
+    <Box>
+      <Typography variant="h2">Welcome {userName}!</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          marginTop: 1,
+        }}
+      >
+        <Button
           onClick={() => navigate("/logout")}
-          className="bg-red-500 text-white p-2 rounded"
+          size="small"
+          variant={UIButtonVariants.CONTAINED}
+          color="primary"
         >
           Logout
-        </button>
-        <button
+        </Button>
+        <Button
+          variant={UIButtonVariants.CONTAINED}
           onClick={handleUpdateProfile}
-          className="bg-blue-500 text-white p-2 rounded"
+          size="small"
+          color="primary"
+          sx={{ mr: 2, ml: 2 }}
         >
           Update Profile
-        </button>
-        <button
+        </Button>
+        <Button
+          variant={UIButtonVariants.CONTAINED}
           onClick={handleCreateTask}
-          className="bg-green-500 text-white p-2 rounded"
+          size="small"
+          color="primary"
         >
           Create Task
-        </button>
-      </div>
-
-      <div className="mt-4">
-        <h3>Tasks</h3>
+        </Button>
+      </Box>
+      <Box>
+        <Typography variant="h5" sx={{ mt: 2 }}>
+          Tasks
+        </Typography>
         <TasksCard
-          tasks={tasks?.personalTasks || []}
           setSelectedTask={setSelectedTask}
           setTaskDialogOpen={setTaskDialogOpen}
           setIsEdit={setIsEdit}
           setIsDeleteDialog={setIsDeleteTaskDialogOpen}
           userId={userId}
         />
-      </div>
+      </Box>
 
       {/* Task Dialog for Create/Edit */}
       <TaskDialog
@@ -106,7 +113,7 @@ const Dashboard: React.FC = () => {
         task={selectedTask}
         userId={userId}
       />
-    </div>
+    </Box>
   );
 };
 

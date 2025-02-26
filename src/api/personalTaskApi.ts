@@ -1,5 +1,3 @@
-// api/userApi.ts
-
 import axios from "axios";
 import { APIURL } from "../constant/baseUrl";
 import { getAuthHeaders } from "../utils/authHeaders";
@@ -15,8 +13,7 @@ export const getPersonalTask = async (
       params: status ? { status } : {}, // Add status as a query parameter if provided
       headers: getAuthHeaders(),
     });
-    console.log("test task", response.data.personalTasks);
-    return response.data.personalTasks; // Only return the task list
+    return response.data; // Only return the task list
   } catch (error) {
     throw new Error(
       error.response?.data?.message || "Error fetching user tasks"

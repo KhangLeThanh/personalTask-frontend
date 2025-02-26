@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Box, Card, CardContent, Typography, Button } from "@mui/material";
+import React from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  CardHeader,
+} from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import Grid from "@mui/material/Grid2";
 import { TaskStatus } from "../../../utils/enum";
 import { Task } from "../../../utils/types";
@@ -20,20 +28,23 @@ const TaskCard: React.FC<TaskCardProps> = ({
   setTaskDialogOpen,
   setIsDeleteDialog,
 }) => {
-  const [toDoTasks, setToDoTasks] = useState<Task[]>([]);
-  const [inProgressTasks, setInProgressTasks] = useState<Task[]>([]);
-  const [doneTasks, setDoneTasks] = useState<Task[]>([]);
-  console.log("test do", toDoTasks);
-  useEffect(() => {
-    if (userId) {
-      getPersonalTask(userId, TaskStatus.toDO).then((tasks) => {
-        console.log("Fetched To Do Tasks:", tasks); // Check the fetched data
-        setToDoTasks(tasks);
-      });
-      getPersonalTask(userId, TaskStatus.inProgress).then(setInProgressTasks);
-      getPersonalTask(userId, TaskStatus.done).then(setDoneTasks);
-    }
-  }, [userId]);
+  // Query for fetching tasks by status
+  const { data: toDoTasks, isLoading: isLoadingToDo } = useQuery({
+    queryKey: ["tasks", userId, TaskStatus.toDO],
+    queryFn: () => getPersonalTask(userId, TaskStatus.toDO),
+    enabled: !!userId,
+  });
+  const { data: inProgressTasks, isLoading: isLoadingInProgress } = useQuery({
+    queryKey: ["tasks", userId, TaskStatus.inProgress],
+    queryFn: () => getPersonalTask(userId, TaskStatus.inProgress),
+    enabled: !!userId,
+  });
+
+  const { data: doneTasks, isLoading: isLoadingDone } = useQuery({
+    queryKey: ["tasks", userId, TaskStatus.done],
+    queryFn: () => getPersonalTask(userId, TaskStatus.done),
+    enabled: !!userId,
+  });
   const handleEditTask = (task: Task) => {
     setSelectedTask(task);
     setTaskDialogOpen(true);
@@ -44,6 +55,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
     setSelectedTask(task);
     setIsDeleteDialog(true);
   };
+  if (isLoadingToDo || isLoadingInProgress || isLoadingDone)
+    return <p>Loading...</p>;
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -53,10 +66,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             To Do
           </Typography>
-          {toDoTasks.map((task) => (
+          {toDoTasks?.personalTasks.map((task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardHeader
+                title={
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Title: {task.title}
+                  </Typography>
+                }
+              />
               <CardContent>
-                <Typography variant="body1">{task.title}</Typography>
+                <Typography variant="body1">Content: {task.content}</Typography>
                 <Box
                   sx={{
                     display: "flex",
@@ -89,10 +109,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             In Progress
           </Typography>
-          {inProgressTasks.map((task) => (
+          {inProgressTasks?.personalTasks.map((task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardHeader
+                title={
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Title: {task.title}
+                  </Typography>
+                }
+              />
               <CardContent>
-                <Typography variant="body1">{task.title}</Typography>
+                <Typography variant="body1">Content: {task.content}</Typography>
                 <Box
                   sx={{
                     display: "flex",
@@ -125,10 +152,17 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             Done
           </Typography>
-          {doneTasks.map((task) => (
+          {doneTasks?.personalTasks.map((task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
+              <CardHeader
+                title={
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Title: {task.title}
+                  </Typography>
+                }
+              />
               <CardContent>
-                <Typography variant="body1">{task.title}</Typography>
+                <Typography variant="body1">Content: {task.content}</Typography>
                 <Box
                   sx={{
                     display: "flex",

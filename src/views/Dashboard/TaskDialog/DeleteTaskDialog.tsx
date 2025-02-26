@@ -62,7 +62,7 @@ const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
       title="Are you sure to delete"
       onConfirm={handleConfirm}
     >
-      <Typography variant="h3"> Do you want to delete this task?</Typography>
+      <Typography variant="body1"> Do you want to delete this task?</Typography>
     </FormDialog>
   );
 };

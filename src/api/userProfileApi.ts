@@ -1,4 +1,4 @@
-// api/userApi.ts
+// api/userProfileApi.ts
 
 import axios from "axios";
 import { APIURL } from "../constant/baseUrl";
