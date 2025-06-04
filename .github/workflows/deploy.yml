@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main] # Trigger only on pushes to main
+    branches: [main]
 
 jobs:
   deploy:
@@ -22,6 +22,11 @@ jobs:
 
       - name: Build project
         run: npm run build
+
+      - name: Configure Git user
+        run: |
+          git config --global user.email "khangthanh2312@gmail.com"
+          git config --global user.name "KhangLeThanh"
 
       - name: Deploy to GitHub Pages
         run: |
