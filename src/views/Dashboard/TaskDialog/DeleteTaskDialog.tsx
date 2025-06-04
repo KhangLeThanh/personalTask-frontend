@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import FormDialog from "../../../components/FormDialog/FormDialog";
+import { AxiosError } from "axios";
 import { Task } from "../../../utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteUserTask } from "../../../api/personalTaskApi"; // Import API functions
@@ -11,6 +12,9 @@ type DeleteTaskDialogProps = {
   onConfirm: () => void;
   task: Task | null;
   userId: string | null;
+};
+type ErrorResponse = {
+  message: string;
 };
 
 const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
@@ -26,7 +30,7 @@ const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
 
   useEffect(() => {
     if (task) {
-      setTaskId(task._id);
+      setTaskId(task._id ? task._id : "");
     }
   }, [task]);
 
@@ -43,7 +47,7 @@ const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
       onConfirm();
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error(
         error.response?.data?.message || "Error creating user task"
       );
