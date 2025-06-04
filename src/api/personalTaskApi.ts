@@ -14,10 +14,15 @@ export const getPersonalTask = async (
       headers: getAuthHeaders(),
     });
     return response.data; // Only return the task list
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Error fetching user tasks"
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(
+        error.response?.data?.message || "Error fetching user tasks"
+      );
+    }
+    // fallback for unknown error types
+    throw new Error("Error fetching user tasks");
   }
 };
 
@@ -38,10 +43,15 @@ export const createUserTask = async ({
       }
     );
     return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Error creating user task"
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(
+        error.response?.data?.message || "Error creating user task"
+      );
+    }
+    // fallback for unknown error types
+    throw new Error("Error creating user task");
   }
 };
 // Update user task (title, content, status)
@@ -63,10 +73,15 @@ export const updateUserTask = async ({
       }
     );
     return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Error updating user task"
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(
+        error.response?.data?.message || "Error updating user task"
+      );
+    }
+    // fallback for unknown error types
+    throw new Error("Error updating user task");
   }
 };
 
@@ -86,9 +101,14 @@ export const deleteUserTask = async ({
       }
     );
     return response.data || { message: "Task deleted successfully" };
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || "Error updating user task"
-    );
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(
+        error.response?.data?.message || "Error updating user task"
+      );
+    }
+    // fallback for unknown error types
+    throw new Error("Error updating user task");
   }
 };

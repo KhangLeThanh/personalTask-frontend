@@ -11,8 +11,13 @@ export const getUser = async (userId: string | null) => {
       headers: getAuthHeaders(),
     });
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Error fetching user ");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(error.response?.data?.message || "Error fetching user");
+    }
+    // fallback for unknown error types
+    throw new Error("Error fetching user");
   }
 };
 
@@ -26,7 +31,12 @@ export const createUser = async (userData: {
       headers: getAuthHeaders(),
     });
     return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Error fetching user ");
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      // error is now typed as AxiosError
+      throw new Error(error.response?.data?.message || "Error creating user");
+    }
+    // fallback for unknown error types
+    throw new Error("Error creating user");
   }
 };
