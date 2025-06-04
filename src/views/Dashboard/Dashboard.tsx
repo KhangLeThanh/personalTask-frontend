@@ -8,12 +8,13 @@ import TaskDialog from "./TaskDialog/TaskDialog";
 import TasksCard from "./TaskCard/TaskCard";
 import DeleteTaskDialog from "./TaskDialog/DeleteTaskDialog";
 import { UIButtonVariants } from "../../utils/enum";
+import { Task } from "../../utils/types";
 
 const Dashboard: React.FC = () => {
   const [isTaskDialogOpen, setTaskDialogOpen] = useState(false);
   const [isDeleteTaskDialogOpen, setIsDeleteTaskDialogOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [userName, setUserName] = useState("");
 
   const navigate = useNavigate();
@@ -95,7 +96,9 @@ const Dashboard: React.FC = () => {
           setIsEdit(false);
         }}
         onConfirm={() => {
-          queryClient.invalidateQueries(["tasks", userId]);
+          queryClient.invalidateQueries({
+            queryKey: ["tasks", userId].filter((v): v is string => !!v),
+          });
           setIsEdit(false);
         }}
         task={selectedTask}
@@ -108,7 +111,10 @@ const Dashboard: React.FC = () => {
         isOpen={isDeleteTaskDialogOpen}
         onClose={() => setIsDeleteTaskDialogOpen(false)}
         onConfirm={() => {
-          queryClient.invalidateQueries(["tasks", userId]);
+          queryClient.invalidateQueries({
+            queryKey: ["tasks", userId].filter((v): v is string => !!v),
+          });
+          setIsDeleteTaskDialogOpen(false);
         }}
         task={selectedTask}
         userId={userId}

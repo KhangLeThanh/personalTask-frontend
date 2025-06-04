@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Select, MenuItem, FormControl, TextField } from "@mui/material";
+import { AxiosError } from "axios";
 import FormDialog from "../../../components/FormDialog/FormDialog";
 import Label from "../../../components/Label/Label";
 import { Task } from "../../../utils/types";
@@ -17,6 +18,9 @@ type TaskDialogProps = {
   userId: string | null;
 };
 
+type ErrorResponse = {
+  message: string;
+};
 const TaskDialog: React.FC<TaskDialogProps> = ({
   isOpen,
   onClose,
@@ -37,7 +41,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       setStatus(task.status);
       setTitle(task.title);
       setContent(task.content);
-      setTaskId(task._id);
+      setTaskId(task._id ? task._id : "");
     } else {
       setStatus(TaskStatus.toDO);
       setTitle("");
@@ -49,8 +53,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   const { mutateAsync: createTask } = useMutation({
     mutationFn: createUserTask, // Function to perform mutation (create task)
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["tasks", userId].filter(Boolean));
-      await queryClient.refetchQueries(["tasks", userId].filter(Boolean));
+      const queryKey = userId ? ["tasks", userId] : ["tasks"];
+
+      await queryClient.invalidateQueries({ queryKey });
+      await queryClient.refetchQueries({ queryKey });
       onConfirm(); // Trigger onConfirm after the mutation
       onClose(); // Close the dialog
       // Reset the form
@@ -58,7 +64,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       setTitle("");
       setContent("");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error(
         error.response?.data?.message || "Error creating user task"
       );
@@ -69,12 +75,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   const { mutateAsync: updateTask } = useMutation({
     mutationFn: updateUserTask, // API function for updating a task
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["tasks", userId].filter(Boolean));
-      await queryClient.refetchQueries(["tasks", userId].filter(Boolean));
+      const queryKey = userId ? ["tasks", userId] : ["tasks"];
+
+      await queryClient.invalidateQueries({ queryKey });
+      await queryClient.refetchQueries({ queryKey });
+
       onConfirm(); // Trigger onConfirm after the mutation
       onClose(); // Close the dialog
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ErrorResponse>) => {
       console.error(
         error.response?.data?.message || "Error updating user task"
       );

@@ -15,6 +15,7 @@ export type Task = {
   title: string;
   content: string;
   status: string;
+  _id?: string;
 };
 export type PersonalTask = {
   userName: string;

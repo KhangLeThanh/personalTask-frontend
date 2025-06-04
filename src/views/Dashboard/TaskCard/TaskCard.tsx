@@ -66,7 +66,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             To Do
           </Typography>
-          {toDoTasks?.personalTasks.map((task) => (
+          {toDoTasks?.personalTasks.map((task: Task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
               <CardHeader
                 title={
@@ -109,7 +109,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             In Progress
           </Typography>
-          {inProgressTasks?.personalTasks.map((task) => (
+          {inProgressTasks?.personalTasks.map((task: Task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
               <CardHeader
                 title={
@@ -152,7 +152,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             Done
           </Typography>
-          {doneTasks?.personalTasks.map((task) => (
+          {doneTasks?.personalTasks.map((task: Task) => (
             <Card key={task._id} sx={{ marginBottom: 2 }}>
               <CardHeader
                 title={
