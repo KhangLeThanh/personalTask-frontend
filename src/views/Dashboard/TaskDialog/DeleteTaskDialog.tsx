@@ -33,7 +33,7 @@ const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
 
   // Mutation for delete a task
   const { mutateAsync: deleteTask } = useMutation({
-    mutationFn: deleteUserTask, // Function to perform mutation (delete task)
+    mutationFn: deleteUserTask,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["tasks", userId].filter(Boolean),
