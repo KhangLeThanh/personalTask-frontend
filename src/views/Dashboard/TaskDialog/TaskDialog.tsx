@@ -51,14 +51,14 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
   // Mutation for creating a task
   const { mutateAsync: createTask } = useMutation({
-    mutationFn: createUserTask, // Function to perform mutation (create task)
+    mutationFn: createUserTask,
     onSuccess: async () => {
       const queryKey = userId ? ["tasks", userId] : ["tasks"];
 
       await queryClient.invalidateQueries({ queryKey });
       await queryClient.refetchQueries({ queryKey });
-      onConfirm(); // Trigger onConfirm after the mutation
-      onClose(); // Close the dialog
+      onConfirm();
+      onClose();
       // Reset the form
       setStatus(TaskStatus.toDO);
       setTitle("");
@@ -73,15 +73,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
   // Mutation for updating an existing task
   const { mutateAsync: updateTask } = useMutation({
-    mutationFn: updateUserTask, // API function for updating a task
+    mutationFn: updateUserTask,
     onSuccess: async () => {
       const queryKey = userId ? ["tasks", userId] : ["tasks"];
 
       await queryClient.invalidateQueries({ queryKey });
       await queryClient.refetchQueries({ queryKey });
 
-      onConfirm(); // Trigger onConfirm after the mutation
-      onClose(); // Close the dialog
+      onConfirm();
+      onClose();
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error(

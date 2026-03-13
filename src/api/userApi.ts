@@ -1,5 +1,3 @@
-// api/userApi.ts
-
 import axios from "axios";
 import { APIURL } from "../constant/baseUrl";
 import { getAuthHeaders } from "../utils/authHeaders";
@@ -13,7 +11,7 @@ export const getUser = async (userId: string | null) => {
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      // error is now typed as AxiosError
+      // checking Axios error
       throw new Error(error.response?.data?.message || "Error fetching user");
     }
     // fallback for unknown error types
@@ -33,7 +31,7 @@ export const createUser = async (userData: {
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      // error is now typed as AxiosError
+      // checking Axios error
       throw new Error(error.response?.data?.message || "Error creating user");
     }
     // fallback for unknown error types
