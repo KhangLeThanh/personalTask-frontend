@@ -69,7 +69,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
     <Box sx={{ padding: 3 }}>
       <Grid container spacing={3}>
         {/* To Do Column */}
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={columnStyle}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
               To Do
@@ -118,7 +118,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         </Grid>
 
         {/* In Progress Column */}
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={columnStyle}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
               In Progress
@@ -167,7 +167,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
         </Grid>
 
         {/* Done Column */}
-        <Grid size={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={columnStyle}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
               Done
