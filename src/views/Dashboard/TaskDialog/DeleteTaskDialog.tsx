@@ -11,7 +11,7 @@ type DeleteTaskDialogProps = {
   onClose: () => void;
   onConfirm: () => void;
   task: Task | null;
-  userId: string | null;
+  userId: string;
 };
 type ErrorResponse = {
   message: string;
@@ -56,7 +56,7 @@ const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
 
   // Handle confirm delete action
   const handleConfirm = async () => {
-    await deleteTask({ userId, taskId }); // Pass userId and taskData separately
+    await deleteTask({ userId, taskId });
   };
 
   return (

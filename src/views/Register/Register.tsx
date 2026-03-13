@@ -29,13 +29,11 @@ const Regiser: React.FC = () => {
         const response = await createUser(values);
         if (response.status === 201) {
           setErrorMessage(null);
-          setTimeout(() => navigate("/login"), 2000); // Redirect after 2s
+          setTimeout(() => navigate("/home"), 2000); // Redirect after 2s
         }
-      } catch (error: any) {
-        console.log("test errors", error);
-        setErrorMessage(
-          error.response?.data?.message || "Failed to create user"
-        );
+      } catch (error: unknown) {
+        if (error instanceof Error) setErrorMessage(error.message);
+        else setErrorMessage("Failed to create user");
       }
     },
   });

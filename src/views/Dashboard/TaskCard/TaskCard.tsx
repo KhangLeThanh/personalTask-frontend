@@ -14,7 +14,7 @@ import { Task } from "../../../utils/types";
 import { getPersonalTask } from "../../../api/personalTaskApi";
 
 type TaskCardProps = {
-  userId: string | null;
+  userId: string;
   setSelectedTask: (task: Task) => void;
   setTaskDialogOpen: (open: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
@@ -66,42 +66,46 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             To Do
           </Typography>
-          {toDoTasks?.personalTasks.map((task: Task) => (
-            <Card key={task._id} sx={{ marginBottom: 2 }}>
-              <CardHeader
-                title={
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Title: {task.title}
-                  </Typography>
-                }
-              />
-              <CardContent>
-                <Typography variant="body1">Content: {task.content}</Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginTop: 1,
-                  }}
-                >
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => handleEditTask(task)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteTask(task)}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+          {toDoTasks.length > 0
+            ? toDoTasks.map((task: Task) => (
+                <Card key={task._id} sx={{ marginBottom: 2 }}>
+                  <CardHeader
+                    title={
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        Title: {task.title}
+                      </Typography>
+                    }
+                  />
+                  <CardContent>
+                    <Typography variant="body1">
+                      Content: {task.content}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginTop: 1,
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEditTask(task)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteTask(task)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))
+            : null}
         </Grid>
 
         {/* In Progress Column */}
@@ -109,42 +113,46 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             In Progress
           </Typography>
-          {inProgressTasks?.personalTasks.map((task: Task) => (
-            <Card key={task._id} sx={{ marginBottom: 2 }}>
-              <CardHeader
-                title={
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Title: {task.title}
-                  </Typography>
-                }
-              />
-              <CardContent>
-                <Typography variant="body1">Content: {task.content}</Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginTop: 1,
-                  }}
-                >
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => handleEditTask(task)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteTask(task)}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+          {inProgressTasks.length > 0
+            ? inProgressTasks.map((task: Task) => (
+                <Card key={task._id} sx={{ marginBottom: 2 }}>
+                  <CardHeader
+                    title={
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        Title: {task.title}
+                      </Typography>
+                    }
+                  />
+                  <CardContent>
+                    <Typography variant="body1">
+                      Content: {task.content}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginTop: 1,
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEditTask(task)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteTask(task)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))
+            : null}
         </Grid>
 
         {/* Done Column */}
@@ -152,42 +160,46 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <Typography variant="h6" sx={{ marginBottom: 2 }}>
             Done
           </Typography>
-          {doneTasks?.personalTasks.map((task: Task) => (
-            <Card key={task._id} sx={{ marginBottom: 2 }}>
-              <CardHeader
-                title={
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Title: {task.title}
-                  </Typography>
-                }
-              />
-              <CardContent>
-                <Typography variant="body1">Content: {task.content}</Typography>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginTop: 1,
-                  }}
-                >
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => handleEditTask(task)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleDeleteTask(task)}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              </CardContent>
-            </Card>
-          ))}
+          {doneTasks.length > 0
+            ? doneTasks.map((task: Task) => (
+                <Card key={task._id} sx={{ marginBottom: 2 }}>
+                  <CardHeader
+                    title={
+                      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                        Title: {task.title}
+                      </Typography>
+                    }
+                  />
+                  <CardContent>
+                    <Typography variant="body1">
+                      Content: {task.content}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        marginTop: 1,
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEditTask(task)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteTask(task)}
+                      >
+                        Delete
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))
+            : null}
         </Grid>
       </Grid>
     </Box>

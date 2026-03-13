@@ -9,57 +9,74 @@ import { getUserProfile, updateUserProfile } from "../../api/userProfileApi";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 
-const validationSchema = yup.object().shape({
-  age: yup.number().min(1).required("Age is required"),
+const validationSchema = yup.object({
+  age: yup
+    .number()
+    .min(1, "Age must be at least 1")
+    .required("Age is required"),
+  bio: yup.string(),
+  location: yup.string(),
 });
+
 const UserProfile: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [initialValues, setInitialValues] = useState<Profile>({
-    age: null,
+    age: 0,
     bio: "",
     location: "",
   });
+
   const navigate = useNavigate();
+
+  // Fetch profile on mount
   useEffect(() => {
-    getUserProfile(getUserId())
+    const userId = getUserId();
+    if (!userId) return;
+
+    getUserProfile(userId)
       .then((data) => {
         setInitialValues({
-          age: data.profile?.age || null,
-          bio: data.profile?.bio || "",
-          location: data.profile?.location || "",
+          age: data?.profile?.age ?? 0,
+          bio: data?.profile?.bio ?? "",
+          location: data?.profile?.location ?? "",
         });
       })
-      .catch((error) => {
-        setErrorMessage(error.message);
+      .catch((error: unknown) => {
+        if (error instanceof Error) setErrorMessage(error.message);
+        else setErrorMessage("Failed to fetch user profile");
       });
   }, []);
-  // Formik setup
-  const formik = useFormik({
+
+  const formik = useFormik<Profile>({
     initialValues,
+    enableReinitialize: true, // important: update Formik values when initialValues change
     validationSchema,
-    enableReinitialize: true,
     onSubmit: async (values) => {
       try {
-        const response = await updateUserProfile(getUserId(), values);
-        if (response.status === 201) {
+        const userId = getUserId();
+        if (!userId) return;
+
+        const response = await updateUserProfile(userId, values);
+
+        // Navigate after successful update
+        if (response.status === 201 || response.status === 200) {
           setErrorMessage(null);
-          setTimeout(() => navigate("/home"), 2000); // Redirect after 2s
+          navigate("/home");
         }
-      } catch (error: any) {
-        console.log("test errors", error);
-        setErrorMessage(
-          error.response?.data?.message || "Failed to update user profile"
-        );
+      } catch (error: unknown) {
+        if (error instanceof Error) setErrorMessage(error.message);
+        else setErrorMessage("Failed to update profile");
       }
     },
   });
 
   return (
-    <Container maxWidth="sm" style={{ textAlign: "left", marginTop: "50px" }}>
-      <Typography variant="h4" gutterBottom style={{ textAlign: "center" }}>
+    <Container maxWidth="sm" sx={{ mt: 6 }}>
+      <Typography variant="h4" gutterBottom textAlign="center">
         Update Profile
       </Typography>
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
+      {errorMessage && <Alert severity="error">{errorMessage} </Alert>}
 
       <form onSubmit={formik.handleSubmit}>
         <Label text="Age" />
@@ -68,39 +85,44 @@ const UserProfile: React.FC = () => {
           type="number"
           fullWidth
           margin="normal"
-          value={formik.values.age}
+          value={formik.values.age ?? 0} // fallback to 0
           onChange={formik.handleChange}
           error={formik.touched.age && Boolean(formik.errors.age)}
           helperText={formik.touched.age && formik.errors.age}
         />
-        <Label text="Bio" />
 
+        <Label text="Bio" />
         <TextField
           name="bio"
-          type="bio"
+          type="text"
           fullWidth
           margin="normal"
-          value={formik.values.bio}
+          value={formik.values.bio ?? ""}
           onChange={formik.handleChange}
+          error={formik.touched.bio && Boolean(formik.errors.bio)}
+          helperText={formik.touched.bio && formik.errors.bio}
         />
-        <Label text="Location" />
 
+        <Label text="Location" />
         <TextField
           name="location"
-          type="location"
+          type="text"
           fullWidth
           margin="normal"
-          value={formik.values.location}
+          value={formik.values.location ?? ""}
           onChange={formik.handleChange}
+          error={formik.touched.location && Boolean(formik.errors.location)}
+          helperText={formik.touched.location && formik.errors.location}
         />
+
         <Button
           type="submit"
           variant={UIButtonVariants.CONTAINED}
           color="primary"
           fullWidth
-          style={{ marginTop: "16px" }}
+          sx={{ mt: 2 }}
         >
-          Update a profile
+          Update Profile
         </Button>
       </form>
     </Container>

@@ -11,15 +11,24 @@ export const getUserProfile = async (userId: string | null) => {
     const response = await axios.get(`${APIURL}/profiles/${userId}/profile`, {
       headers: getAuthHeaders(),
     });
+    if (!response.data.profile) {
+      return {
+        userName: response.data.userName,
+        profile: {
+          age: 0,
+          bio: "",
+          location: "",
+        },
+      };
+    }
+
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      // error is now typed as AxiosError
       throw new Error(
         error.response?.data?.message || "Error fetching user profile"
       );
     }
-    // fallback for unknown error types
     throw new Error("Error fetching user profile");
   }
 };
@@ -40,12 +49,10 @@ export const updateUserProfile = async (
     return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
-      // error is now typed as AxiosError
       throw new Error(
         error.response?.data?.message || "Error updating user profile"
       );
     }
-    // fallback for unknown error types
     throw new Error("Error updating user profile");
   }
 };

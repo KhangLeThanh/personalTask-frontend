@@ -79,13 +79,15 @@ const Dashboard: React.FC = () => {
         <Typography variant="h5" sx={{ mt: 2 }}>
           Tasks
         </Typography>
-        <TasksCard
-          setSelectedTask={setSelectedTask}
-          setTaskDialogOpen={setTaskDialogOpen}
-          setIsEdit={setIsEdit}
-          setIsDeleteDialog={setIsDeleteTaskDialogOpen}
-          userId={userId}
-        />
+        {userId && (
+          <TasksCard
+            setSelectedTask={setSelectedTask}
+            setTaskDialogOpen={setTaskDialogOpen}
+            setIsEdit={setIsEdit}
+            setIsDeleteDialog={setIsDeleteTaskDialogOpen}
+            userId={userId}
+          />
+        )}
       </Box>
 
       {/* Task Dialog for Create/Edit */}
@@ -107,18 +109,20 @@ const Dashboard: React.FC = () => {
       />
 
       {/* Delete Task Dialog */}
-      <DeleteTaskDialog
-        isOpen={isDeleteTaskDialogOpen}
-        onClose={() => setIsDeleteTaskDialogOpen(false)}
-        onConfirm={() => {
-          queryClient.invalidateQueries({
-            queryKey: ["tasks", userId].filter((v): v is string => !!v),
-          });
-          setIsDeleteTaskDialogOpen(false);
-        }}
-        task={selectedTask}
-        userId={userId}
-      />
+      {userId && (
+        <DeleteTaskDialog
+          isOpen={isDeleteTaskDialogOpen}
+          onClose={() => setIsDeleteTaskDialogOpen(false)}
+          onConfirm={() => {
+            queryClient.invalidateQueries({
+              queryKey: ["tasks", userId].filter((v): v is string => !!v),
+            });
+            setIsDeleteTaskDialogOpen(false);
+          }}
+          task={selectedTask}
+          userId={userId}
+        />
+      )}
     </Box>
   );
 };

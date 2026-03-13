@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Container, Typography, TextField } from "@mui/material";
+import React, { useState } from "react";
+import { Button, Container, Typography, TextField, Alert } from "@mui/material";
 import { UIButtonVariants } from "../../utils/enum";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -17,27 +17,28 @@ const validationSchema = yup.object().shape({
 });
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues,
     validationSchema,
     onSubmit: async (values) => {
       try {
-        console.log("test values", values);
         const response = await loginUser(values);
+
         if (response.status === 200) {
           localStorage.setItem("token", response.data.token);
           localStorage.setItem("userId", response.data.user.id);
 
           setTimeout(() => navigate("/home"), 2000);
         }
-      } catch (error: any) {
-        console.log("test errors", error);
+      } catch (error: unknown) {
+        if (error instanceof Error) setErrorMessage(error.message);
+        else setErrorMessage("Failed to login");
       }
     },
   });
   const handleRegister = () => {
-    // Simulate login process and navigate to created-user page
     navigate("/register");
   };
   return (
@@ -45,6 +46,8 @@ const Login: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Login
       </Typography>
+      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+
       <form onSubmit={formik.handleSubmit}>
         <TextField
           name="userName"
