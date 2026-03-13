@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { getUserId } from "../../utils/auth";
 import { getUserProfile } from "../../api/userProfileApi";
 import TaskDialog from "./TaskDialog/TaskDialog";
@@ -15,30 +15,27 @@ const Dashboard: React.FC = () => {
   const [isDeleteTaskDialogOpen, setIsDeleteTaskDialogOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-  const [userName, setUserName] = useState("");
 
   const navigate = useNavigate();
   const userId = getUserId();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (userId) {
-      getUserProfile(userId)
-        .then((res) => {
-          setUserName(res.userName);
-        })
-        .catch((error) => {
-          console.log("Error fetching user:", error);
-        });
-    }
-  }, [userId]);
+  const { data: profile } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => getUserProfile(userId!),
+    enabled: !!userId,
+  });
 
-  const handleUpdateProfile = () => navigate("/update-profile");
+  const userName = profile?.userName || "";
 
-  const handleCreateTask = () => {
+  const handleUpdateProfile = useCallback(() => {
+    navigate("/update-profile");
+  }, [navigate]);
+
+  const handleCreateTask = useCallback(() => {
     setSelectedTask(null);
     setTaskDialogOpen(true);
-  };
+  }, []);
 
   return (
     <Box>

@@ -8,13 +8,11 @@ import { loginUser } from "../../api/loginApi";
 
 import { useNavigate } from "react-router-dom";
 
-// Define form values type
 interface RegisterFormValues {
   userName: string;
   password: string;
 }
 
-// Form initial values
 const initialValues: RegisterFormValues = {
   userName: "",
   password: "",

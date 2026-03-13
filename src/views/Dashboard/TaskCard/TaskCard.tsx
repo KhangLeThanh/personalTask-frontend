@@ -13,13 +13,13 @@ import { TaskStatus } from "../../../utils/enum";
 import { Task } from "../../../utils/types";
 import { getPersonalTask } from "../../../api/personalTaskApi";
 
-type TaskCardProps = {
+interface TaskCardProps {
   userId: string;
   setSelectedTask: (task: Task) => void;
   setTaskDialogOpen: (open: boolean) => void;
   setIsEdit: (isEdit: boolean) => void;
   setIsDeleteDialog: (isDelete: boolean) => void;
-};
+}
 
 const TaskCard: React.FC<TaskCardProps> = ({
   userId,
@@ -219,4 +219,4 @@ const TaskCard: React.FC<TaskCardProps> = ({
   );
 };
 
-export default TaskCard;
+export default React.memo(TaskCard);

@@ -6,13 +6,13 @@ import { Task, ErrorResponse } from "../../../utils/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteUserTask } from "../../../api/personalTaskApi"; // Import API functions
 
-type DeleteTaskDialogProps = {
+interface DeleteTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   task: Task | null;
   userId: string;
-};
+}
 
 const DeleteTaskDialog: React.FC<DeleteTaskDialogProps> = ({
   isOpen,

@@ -1,26 +1,28 @@
-export type UserName = {
+import { TaskStatus } from "./enum";
+
+export interface UserName {
   userName: string;
   passWord: string;
-};
-export type Profile = {
+}
+export interface Profile {
   age: number | null;
   bio: string;
   location: string;
-};
-export type UserProfie = {
+}
+export interface UserProfie {
   userName: string;
   profile: Profile;
-};
-export type Task = {
+}
+export interface Task {
   title: string;
   content: string;
-  status: string;
+  status: TaskStatus;
   _id?: string;
-};
-export type PersonalTask = {
+}
+export interface PersonalTask {
   userName: string;
   personalTasks: Task[];
-};
-export type ErrorResponse = {
+}
+export interface ErrorResponse {
   message: string;
-};
+}

@@ -1,68 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button, Container, Typography, TextField, Alert } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { getUserId } from "../../utils/auth";
 import { Profile } from "../../utils/types";
 import { UIButtonVariants } from "../../utils/enum";
 import Label from "../../components/Label/Label";
 import { useFormik } from "formik";
 import { getUserProfile, updateUserProfile } from "../../api/userProfileApi";
-import * as yup from "yup";
+import userProfileSchema from "../../schema/userProfileSchema";
 import { useNavigate } from "react-router-dom";
-
-const validationSchema = yup.object({
-  age: yup
-    .number()
-    .min(1, "Age must be at least 1")
-    .required("Age is required"),
-  bio: yup.string(),
-  location: yup.string(),
-});
 
 const UserProfile: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [initialValues, setInitialValues] = useState<Profile>({
-    age: 0,
-    bio: "",
-    location: "",
-  });
 
   const navigate = useNavigate();
 
-  // Fetch profile on mount
-  useEffect(() => {
-    const userId = getUserId();
-    if (!userId) return;
+  const userId = getUserId();
 
-    getUserProfile(userId)
-      .then((data) => {
-        setInitialValues({
-          age: data?.profile?.age ?? 0,
-          bio: data?.profile?.bio ?? "",
-          location: data?.profile?.location ?? "",
-        });
-      })
-      .catch((error: unknown) => {
-        if (error instanceof Error) setErrorMessage(error.message);
-        else setErrorMessage("Failed to fetch user profile");
-      });
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["profile", userId],
+    queryFn: () => getUserProfile(userId!),
+    enabled: !!userId,
+  });
 
   const formik = useFormik<Profile>({
-    initialValues,
-    enableReinitialize: true, // important: update Formik values when initialValues change
-    validationSchema,
+    initialValues: {
+      age: data?.profile?.age ?? 0,
+      bio: data?.profile?.bio ?? "",
+      location: data?.profile?.location ?? "",
+    },
+    enableReinitialize: true,
+    validationSchema: userProfileSchema,
     onSubmit: async (values) => {
       try {
         const userId = getUserId();
         if (!userId) return;
 
-        const response = await updateUserProfile(userId, values);
+        await updateUserProfile(userId, values);
 
-        // Navigate after successful update
-        if (response.status === 201 || response.status === 200) {
-          setErrorMessage(null);
-          navigate("/home");
-        }
+        setErrorMessage(null);
+        navigate("/home");
       } catch (error: unknown) {
         if (error instanceof Error) setErrorMessage(error.message);
         else setErrorMessage("Failed to update profile");

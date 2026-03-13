@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Select, MenuItem, FormControl, TextField } from "@mui/material";
 import { AxiosError } from "axios";
 import FormDialog from "../../../components/FormDialog/FormDialog";
@@ -7,16 +7,18 @@ import { Task, ErrorResponse } from "../../../utils/types";
 import { TaskStatus } from "../../../utils/enum";
 import { taskStatus } from "../../../constant/constantTaskStatus";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createUserTask, updateUserTask } from "../../../api/personalTaskApi"; // Import API functions
+import { createUserTask, updateUserTask } from "../../../api/personalTaskApi";
+import { useFormik } from "formik";
+import taskSchema from "../../../schema/taskSchema";
 
-type TaskDialogProps = {
+interface TaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   task: Task | null;
   isEdit?: boolean;
   userId: string | null;
-};
+}
 
 const TaskDialog: React.FC<TaskDialogProps> = ({
   isOpen,
@@ -26,27 +28,51 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   isEdit = false,
   userId,
 }) => {
-  const [status, setStatus] = useState<TaskStatus | string>(TaskStatus.toDO);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [taskId, setTaskId] = useState("");
-
   const queryClient = useQueryClient();
+
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      content: "",
+      status: TaskStatus.toDO,
+      taskId: "",
+    },
+    validationSchema: taskSchema,
+    enableReinitialize: true,
+    onSubmit: async (values) => {
+      const personalTask = {
+        title: values.title,
+        content: values.content,
+        status: values.status,
+      };
+
+      if (isEdit && task && userId) {
+        await updateTask({
+          userId,
+          taskId: values.taskId,
+          personalTask,
+        });
+      } else if (userId) {
+        await createTask({
+          userId,
+          personalTask,
+        });
+      }
+    },
+  });
 
   useEffect(() => {
     if (task) {
-      setStatus(task.status);
-      setTitle(task.title);
-      setContent(task.content);
-      setTaskId(task._id ? task._id : "");
-    } else {
-      setStatus(TaskStatus.toDO);
-      setTitle("");
-      setContent("");
+      formik.setValues({
+        title: task.title,
+        content: task.content,
+        status: task.status as TaskStatus,
+        taskId: task._id || "",
+      });
     }
   }, [task]);
 
-  // Mutation for creating a task
+  // Create mutation
   const { mutateAsync: createTask } = useMutation({
     mutationFn: createUserTask,
     onSuccess: async () => {
@@ -54,12 +80,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
       await queryClient.invalidateQueries({ queryKey });
       await queryClient.refetchQueries({ queryKey });
+
       onConfirm();
       onClose();
-      // Reset the form
-      setStatus(TaskStatus.toDO);
-      setTitle("");
-      setContent("");
+      formik.resetForm();
     },
     onError: (error: AxiosError<ErrorResponse>) => {
       console.error(
@@ -68,7 +92,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     },
   });
 
-  // Mutation for updating an existing task
+  // Update mutation
   const { mutateAsync: updateTask } = useMutation({
     mutationFn: updateUserTask,
     onSuccess: async () => {
@@ -87,45 +111,42 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     },
   });
 
-  // Handle confirm action (Create or Update)
-  const handleConfirm = async () => {
-    const personalTask = { title, content, status };
-
-    if (isEdit && task && userId) {
-      // Update task if in edit mode
-      await updateTask({ userId, taskId, personalTask });
-    } else if (userId) {
-      // Create task if not in edit mode
-      await createTask({ userId, personalTask });
-    }
-  };
-
   return (
     <FormDialog
       isOpen={isOpen}
       onClose={onClose}
       title={isEdit ? "Edit Task" : "Create Task"}
-      onConfirm={handleConfirm}
+      onConfirm={formik.handleSubmit}
     >
       <Label text="Title:" />
       <TextField
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        name="title"
+        value={formik.values.title}
+        onChange={formik.handleChange}
         fullWidth
-        required
+        error={formik.touched.title && Boolean(formik.errors.title)}
+        helperText={formik.touched.title && formik.errors.title}
       />
+
       <Label text="Content:" />
       <TextField
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
+        name="content"
+        value={formik.values.content}
+        onChange={formik.handleChange}
         fullWidth
-        required
         multiline
         rows={4}
+        error={formik.touched.content && Boolean(formik.errors.content)}
+        helperText={formik.touched.content && formik.errors.content}
       />
+
       <FormControl fullWidth margin="normal">
         <Label text="Status:" />
-        <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <Select
+          name="status"
+          value={formik.values.status}
+          onChange={formik.handleChange}
+        >
           {taskStatus.map((menu) => (
             <MenuItem key={menu.value} value={menu.value}>
               {menu.title}
