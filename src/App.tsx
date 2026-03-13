@@ -1,20 +1,22 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import Login from "./views/Login/Login";
-import Register from "./views/Register/Register";
-import Dashboard from "./views/Dashboard/Dashboard";
-import UserProfile from "./views/UserProfile/UserProfile";
+
+const Login = lazy(() => import("./views/Login/Login"));
+const Register = lazy(() => import("./views/Register/Register"));
+const Dashboard = lazy(() => import("./views/Dashboard/Dashboard"));
+const UserProfile = lazy(() => import("./views/UserProfile/UserProfile"));
 
 const App: React.FC = () => {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/home" element={<Dashboard />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/update-profile" element={<UserProfile />} />
-      <Route path="*" element={<Login />} />{" "}
-      {/* Redirect unknown routes to login */}
-    </Routes>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/home" element={<Dashboard />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/update-profile" element={<UserProfile />} />
+        <Route path="*" element={<Login />} />{" "}
+      </Routes>
+    </Suspense>
   );
 };
 

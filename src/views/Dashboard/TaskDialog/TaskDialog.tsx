@@ -52,10 +52,26 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           taskId: values.taskId,
           personalTask,
         });
+        formik.resetForm({
+          values: {
+            title: "",
+            content: "",
+            status: TaskStatus.toDO,
+            taskId: "",
+          },
+        });
       } else if (userId) {
         await createTask({
           userId,
           personalTask,
+        });
+        formik.resetForm({
+          values: {
+            title: "",
+            content: "",
+            status: TaskStatus.toDO,
+            taskId: "",
+          },
         });
       }
     },

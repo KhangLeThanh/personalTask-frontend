@@ -49,8 +49,8 @@ const Dashboard: React.FC = () => {
         <Button
           onClick={() => navigate("/logout")}
           size="small"
-          variant={UIButtonVariants.CONTAINED}
-          color="primary"
+          variant={UIButtonVariants.OUTLINED}
+          color="error"
         >
           Logout
         </Button>
@@ -95,9 +95,6 @@ const Dashboard: React.FC = () => {
           setIsEdit(false);
         }}
         onConfirm={() => {
-          queryClient.invalidateQueries({
-            queryKey: ["tasks", userId].filter((v): v is string => !!v),
-          });
           setIsEdit(false);
         }}
         task={selectedTask}
