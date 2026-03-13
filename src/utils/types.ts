@@ -21,3 +21,6 @@ export type PersonalTask = {
   userName: string;
   personalTasks: Task[];
 };
+export type ErrorResponse = {
+  message: string;
+};

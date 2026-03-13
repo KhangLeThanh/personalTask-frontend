@@ -3,7 +3,7 @@ import { Select, MenuItem, FormControl, TextField } from "@mui/material";
 import { AxiosError } from "axios";
 import FormDialog from "../../../components/FormDialog/FormDialog";
 import Label from "../../../components/Label/Label";
-import { Task } from "../../../utils/types";
+import { Task, ErrorResponse } from "../../../utils/types";
 import { TaskStatus } from "../../../utils/enum";
 import { taskStatus } from "../../../constant/constantTaskStatus";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,9 +18,6 @@ type TaskDialogProps = {
   userId: string | null;
 };
 
-type ErrorResponse = {
-  message: string;
-};
 const TaskDialog: React.FC<TaskDialogProps> = ({
   isOpen,
   onClose,
