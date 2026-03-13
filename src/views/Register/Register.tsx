@@ -3,33 +3,50 @@ import { Button, Container, Typography, TextField, Alert } from "@mui/material";
 import { UIButtonVariants } from "../../utils/enum";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { createUser } from "../../api/userApi"; // Import the API functions
+import { createUser } from "../../api/userApi";
+import { loginUser } from "../../api/loginApi";
+
 import { useNavigate } from "react-router-dom";
 
+// Define form values type
+interface RegisterFormValues {
+  userName: string;
+  password: string;
+}
+
 // Form initial values
-const initialValues = {
+const initialValues: RegisterFormValues = {
   userName: "",
   password: "",
 };
+
+// Validation schema
 const validationSchema = yup.object().shape({
   userName: yup.string().required("Username is required"),
   password: yup.string().required("Password is required"),
 });
-const Regiser: React.FC = () => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+const Register: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+
   // Formik setup
-  const formik = useFormik({
+  const formik = useFormik<RegisterFormValues>({
     initialValues,
     validationSchema,
     onSubmit: async (values) => {
-      // Log the form data to the console
       try {
         const response = await createUser(values);
+
         if (response.status === 201) {
+          const loginResponse = await loginUser(values);
+          const data = loginResponse.data;
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.user.id);
+
           setErrorMessage(null);
-          setTimeout(() => navigate("/home"), 2000); // Redirect after 2s
+
+          navigate("/home");
         }
       } catch (error: unknown) {
         if (error instanceof Error) setErrorMessage(error.message);
@@ -43,6 +60,7 @@ const Regiser: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Register
       </Typography>
+
       {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
 
       <form onSubmit={formik.handleSubmit}>
@@ -56,9 +74,10 @@ const Regiser: React.FC = () => {
           error={formik.touched.userName && Boolean(formik.errors.userName)}
           helperText={formik.touched.userName && formik.errors.userName}
         />
+
         <TextField
           name="password"
-          label="password"
+          label="Password"
           type="password"
           fullWidth
           margin="normal"
@@ -67,6 +86,7 @@ const Regiser: React.FC = () => {
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
+
         <Button
           type="submit"
           variant={UIButtonVariants.CONTAINED}
@@ -74,11 +94,11 @@ const Regiser: React.FC = () => {
           fullWidth
           style={{ marginTop: "16px" }}
         >
-          Create a new user
+          Create Account
         </Button>
       </form>
     </Container>
   );
 };
 
-export default Regiser;
+export default Register;

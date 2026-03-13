@@ -3,7 +3,7 @@ import { Button, Container, Typography, TextField, Alert } from "@mui/material";
 import { UIButtonVariants } from "../../utils/enum";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { loginUser } from "../../api/loginApi"; // Import the API functions
+import { loginUser } from "../../api/loginApi";
 import { useNavigate } from "react-router-dom";
 
 // Form initial values
