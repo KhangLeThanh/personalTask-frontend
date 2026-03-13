@@ -1,0 +1,1 @@
+var o=(e=>(e.CONTAINED="contained",e.OUTLINED="outlined",e.TEXT="text",e.UNDERLINED="underlined",e))(o||{}),r=(e=>(e.toDO="toDo",e.inProgress="inProgress",e.done="done",e))(r||{});const t=()=>localStorage.getItem("token"),n=()=>localStorage.getItem("userId"),g=()=>{const e=t();return{Authorization:e?`Bearer ${e}`:""}};export{r as T,o as U,n as a,g};

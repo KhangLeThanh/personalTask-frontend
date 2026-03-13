@@ -1,0 +1,1 @@
+import{d as e,A as t}from"./baseUrl-CYHZHJpD.js";const i=async n=>{var o,s;try{return await e.post(`${t}/login`,n)}catch(r){throw e.isAxiosError(r)?new Error(((s=(o=r.response)==null?void 0:o.data)==null?void 0:s.message)||"Error logging"):new Error("Error logging")}};export{i as l};
