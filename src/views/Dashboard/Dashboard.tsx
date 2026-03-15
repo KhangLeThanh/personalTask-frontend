@@ -28,9 +28,9 @@ const Dashboard: React.FC = () => {
 
   const userName = profile?.userName || "";
 
-  const handleUpdateProfile = useCallback(() => {
+  const handleUpdateProfile = () => {
     navigate("/update-profile");
-  }, [navigate]);
+  };
 
   const handleCreateTask = useCallback(() => {
     setSelectedTask(null);
@@ -39,39 +39,43 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box>
-      <Typography variant="h2">Welcome {userName}!</Typography>
       <Box
         sx={{
           display: "flex",
-          marginTop: 1,
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 1,
         }}
       >
-        <Button
-          onClick={() => navigate("/logout")}
-          size="small"
-          variant={UIButtonVariants.OUTLINED}
-          color="error"
-        >
-          Logout
-        </Button>
-        <Button
-          variant={UIButtonVariants.CONTAINED}
-          onClick={handleUpdateProfile}
-          size="small"
-          color="primary"
-          sx={{ mr: 2, ml: 2 }}
-        >
-          Update Profile
-        </Button>
-        <Button
-          variant={UIButtonVariants.CONTAINED}
-          onClick={handleCreateTask}
-          size="small"
-          color="primary"
-        >
-          Create Task
-        </Button>
+        <Typography variant="h2">Welcome {userName}!</Typography>
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            variant={UIButtonVariants.CONTAINED}
+            onClick={handleUpdateProfile}
+            size="small"
+            color="primary"
+            sx={{ mr: 2, ml: 2 }}
+          >
+            Update Profile
+          </Button>
+          <Button
+            onClick={() => navigate("/logout")}
+            size="small"
+            variant={UIButtonVariants.OUTLINED}
+            color="error"
+          >
+            Logout
+          </Button>
+        </Box>
       </Box>
+      <Button
+        variant={UIButtonVariants.CONTAINED}
+        onClick={handleCreateTask}
+        size="small"
+        color="primary"
+      >
+        Create Task
+      </Button>
       <Box>
         <Typography variant="h5" sx={{ mt: 2 }}>
           Tasks
